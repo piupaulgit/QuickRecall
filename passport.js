@@ -13,7 +13,7 @@ passport.use (
       passReqToCallback: true,
     },
     function (request, accessToken, refreshToken, profile, done) {
-      done (null, profile);
+      done (null, profile)
     }
   )
 );
