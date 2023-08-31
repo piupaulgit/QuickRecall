@@ -1,56 +1,32 @@
-const express = require ('express');
-const passport = require ('passport');
-const session = require ('express-session');
-const path = require ('path');
-const app = express ();
-require ('./auth');
-app.use (express.json ());
-app.use (express.static (path.join (__dirname, 'client')));
+const cookieSession = require("cookie-session");
+const express = require("express");
+const session = require("express-session");
+const cors = require("cors");
+const passport = require("passport");
+const authRoute = require("./routes/auth");
+require ('./passport.js');
+const app = express();
 
-function isLoggedIn (req, res, next) {
-  req.user ? next () : res.sendStatus (401);
-}
+app.use(session({
+  secret: 'SessionSecret',
+  resave: false,
+  saveUninitialized: true
+}));
 
-app.use (
-  session ({
-    secret: 'mysecret',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {secure: false},
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
   })
 );
 
-app.use (passport.initialize ());
-app.use (passport.session ());
-app.get (
-  '/auth/google',
-  passport.authenticate ('google', {
-    scope: ['email', 'profile'],
-  })
-);
+app.use("/auth", authRoute);
 
-app.get (
-  '/auth/google/callback',
-  passport.authenticate ('google', {
-    successRedirect: '/auth/protected',
-    failureRedirect: '/auth/google/failure',
-  })
-);
 
-app.get ('/auth/google/failure', (req, res) => {
-  res.send ('Something went wrong!');
-});
-
-app.get ('/auth/protected', isLoggedIn, (req, res) => {
-  let name = req.user.displayName;
-  res.send (`Hello ${name}`);
-});
-
-app.use ('/auth/logout', (req, res) => {
-  req.session.destroy ();
-  res.send ('See you again!');
-});
-
-app.listen (8000, () => {
-  console.log ('Listening on port 8000');
+app.listen("8000", () => {
+  console.log("Server is running!");
 });
