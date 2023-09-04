@@ -8,9 +8,12 @@ import NonProtected from "./components/authProvider/NonProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Login from './pages/Login';
 import jwtDecode from 'jwt-decode';
+import { useDispatch } from "react-redux";
+import { saveUserEmailOnly } from "./redux/userSlice";
 
 const Routers = () => {
   const [user, setUser] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const haveLocalUser = localStorage.getItem("quickReCallUser"); 
@@ -19,6 +22,7 @@ const Routers = () => {
     }else{
       const decodedToken = jwtDecode(haveLocalUser);
       const userEmail = decodedToken.email;
+      dispatch(saveUserEmailOnly(userEmail))
     }
   }, []);
 
