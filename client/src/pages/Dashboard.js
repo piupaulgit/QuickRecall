@@ -5,11 +5,6 @@ import Select from '../components/Select'
 import { userLogin } from '../services/apis/Auth'
 
 const Dashboard = () => {
-    useEffect(() => {
-        userLogin().then((res) => {
-            console.log(res)
-        });
-    }, [])
     
   return (
     <PageContainer title="Dashboard">
